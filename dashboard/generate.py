@@ -1,31 +1,42 @@
 import pandas as pd
 from datetime import datetime
+import sys
+from pathlib import Path
+sys.path.append(str(Path(__file__).parent))
+from generate_excel import create_excel_dashboard
 
 CASES_FILE = "datasets/cases.csv"
 RESULTS_FILE = "datasets/rule_checker_results.csv"
+AI_RESULTS_FILE = "datasets/ai_diagnosis_results.csv"
 REVIEW_FILE = "datasets/responsible_ai_log.csv"
 OUTPUT_FILE = "dashboard/index.html"
 
 def generate_dashboard():
     """
-    Generate an HTML dashboard from the CSV artifacts.
+    Generate an HTML dashboard and Excel dashboard from the CSV artifacts.
     """
     
     # Load data
     cases_df = pd.read_csv(CASES_FILE)
     results_df = pd.read_csv(RESULTS_FILE)
+    ai_df = pd.read_csv(AI_RESULTS_FILE)
     review_df = pd.read_csv(REVIEW_FILE)
     
     # Calculate metrics
     total_cases = len(cases_df)
+    successful_ai = (ai_df["status"] == "SUCCESS").sum()
+    failed_ai = (ai_df["status"] != "SUCCESS").sum()
+    
     rule_matches = (results_df["comparison"] == "MATCH").sum()
     rule_mismatches = (results_df["comparison"] == "MISMATCH").sum()
     rule_no_detection = (results_df["comparison"] == "NO_DETECTION").sum()
     
+    human_reviews = len(review_df)
     review_accepted = (review_df["human_decision"] == "Accepted").sum()
     review_edited = (review_df["human_decision"] == "Edited").sum()
     
     match_rate = (rule_matches / total_cases * 100) if total_cases > 0 else 0
+    correction_rate = (review_edited / human_reviews * 100) if human_reviews > 0 else 0
     
     # Severity breakdown
     severity_counts = cases_df["severity"].value_counts().to_dict()
@@ -60,7 +71,7 @@ def generate_dashboard():
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NetSage AI Dashboard</title>
+    <title>NetSega AI Dashboard</title>
     <style>
         * {{
             margin: 0;
@@ -70,7 +81,7 @@ def generate_dashboard():
         
         body {{
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0b2545 0%, #134074 100%);
             min-height: 100vh;
             padding: 20px;
         }}
@@ -85,7 +96,7 @@ def generate_dashboard():
         }}
         
         header {{
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0b2545 0%, #134074 100%);
             color: white;
             padding: 40px;
             text-align: center;
@@ -107,22 +118,22 @@ def generate_dashboard():
         
         .metrics-grid {{
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 20px;
             margin-bottom: 40px;
         }}
         
         .metric-card {{
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #134074 0%, #0b2545 100%);
             color: white;
-            padding: 25px;
+            padding: 22px;
             border-radius: 8px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             text-align: center;
         }}
         
         .metric-card h3 {{
-            font-size: 0.9em;
+            font-size: 0.85em;
             opacity: 0.9;
             margin-bottom: 10px;
             text-transform: uppercase;
@@ -130,16 +141,20 @@ def generate_dashboard():
         }}
         
         .metric-card .value {{
-            font-size: 2.5em;
+            font-size: 2.2em;
             font-weight: bold;
         }}
         
         .metric-card.accent {{
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            background: linear-gradient(135deg, #0070d2 0%, #134074 100%);
         }}
         
         .metric-card.success {{
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+        }}
+        
+        .metric-card.warning {{
+            background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
         }}
         
         section {{
@@ -150,7 +165,7 @@ def generate_dashboard():
             color: #333;
             margin-bottom: 20px;
             padding-bottom: 10px;
-            border-bottom: 2px solid #667eea;
+            border-bottom: 2px solid #134074;
         }}
         
         table {{
@@ -224,25 +239,45 @@ def generate_dashboard():
 <body>
     <div class="container">
         <header>
-            <h1>NetSage AI Dashboard</h1>
-            <p>Network Troubleshooting with Responsible AI</p>
+            <h1>NetSega AI Dashboard</h1>
+            <p>Cisco NetAcad VIP 2026 Submission • Network Troubleshooting with Responsible AI</p>
         </header>
         
         <div class="content">
             <section>
-                <h2>📊 Key Metrics</h2>
+                <h2>📊 Key Performance Metrics</h2>
                 <div class="metrics-grid">
                     <div class="metric-card">
                         <h3>Total Cases</h3>
                         <div class="value">{total_cases}</div>
                     </div>
+                    <div class="metric-card success">
+                        <h3>Successful AI Diagnoses</h3>
+                        <div class="value">{successful_ai}</div>
+                    </div>
+                    <div class="metric-card">
+                        <h3>Failed AI Diagnoses</h3>
+                        <div class="value">{failed_ai}</div>
+                    </div>
                     <div class="metric-card accent">
                         <h3>Rule Match Rate</h3>
                         <div class="value">{match_rate:.1f}%</div>
                     </div>
-                    <div class="metric-card success">
+                    <div class="metric-card">
                         <h3>Human Reviews</h3>
-                        <div class="value">{len(review_df)}</div>
+                        <div class="value">{human_reviews}</div>
+                    </div>
+                    <div class="metric-card success">
+                        <h3>Accepted Reviews</h3>
+                        <div class="value">{review_accepted}</div>
+                    </div>
+                    <div class="metric-card warning">
+                        <h3>Edited Reviews</h3>
+                        <div class="value">{review_edited}</div>
+                    </div>
+                    <div class="metric-card warning">
+                        <h3>Human Correction Rate</h3>
+                        <div class="value">{correction_rate:.1f}%</div>
                     </div>
                 </div>
             </section>
@@ -284,12 +319,12 @@ def generate_dashboard():
                     <tr>
                         <td><span class="badge accepted">Accepted</span></td>
                         <td>{review_accepted}</td>
-                        <td>{review_accepted/len(review_df)*100:.1f}%</td>
+                        <td>{review_accepted/human_reviews*100:.1f}%</td>
                     </tr>
                     <tr>
                         <td><span class="badge edited">Edited</span></td>
                         <td>{review_edited}</td>
-                        <td>{review_edited/len(review_df)*100:.1f}%</td>
+                        <td>{review_edited/human_reviews*100:.1f}%</td>
                     </tr>
                 </table>
             </section>
@@ -331,7 +366,7 @@ def generate_dashboard():
         </div>
         
         <footer>
-            <p>NetSage AI Dashboard • Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
+            <p>NetSega AI Dashboard • Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
             <p>Rule Checker: {RESULTS_FILE} | Human Review: {REVIEW_FILE}</p>
         </footer>
     </div>
@@ -342,14 +377,23 @@ def generate_dashboard():
     # Write to file
     with open(OUTPUT_FILE, "w") as f:
         f.write(html)
+        
+    # Generate Excel Dashboard
+    create_excel_dashboard()
     
     print()
-    print("NetSage AI Dashboard Generator")
+    print("NetSega AI Dashboard Generator")
     print("================================")
-    print(f"Dashboard generated: {OUTPUT_FILE}")
-    print(f"Total cases: {total_cases}")
-    print(f"Rule match rate: {match_rate:.1f}%")
-    print(f"Human reviews: {len(review_df)}")
+    print(f"HTML Dashboard generated : {OUTPUT_FILE}")
+    print(f"Excel Dashboard generated: dashboard/NetSega_AI_Dashboard.xlsx")
+    print(f"Total cases              : {total_cases}")
+    print(f"Successful AI Diagnoses  : {successful_ai}")
+    print(f"Failed AI Diagnoses      : {failed_ai}")
+    print(f"Rule match rate          : {match_rate:.1f}%")
+    print(f"Human reviews            : {human_reviews}")
+    print(f"Accepted Reviews         : {review_accepted}")
+    print(f"Edited Reviews           : {review_edited}")
+    print(f"Human Correction Rate    : {correction_rate:.1f}%")
     print()
 
 if __name__ == "__main__":

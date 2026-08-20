@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NetSage AI Dashboard</title>
+    <title>NetSega AI Dashboard</title>
     <style>
         * {
             margin: 0;
@@ -14,7 +14,7 @@
         
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0b2545 0%, #134074 100%);
             min-height: 100vh;
             padding: 20px;
         }
@@ -29,7 +29,7 @@
         }
         
         header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #0b2545 0%, #134074 100%);
             color: white;
             padding: 40px;
             text-align: center;
@@ -51,22 +51,22 @@
         
         .metrics-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 20px;
             margin-bottom: 40px;
         }
         
         .metric-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #134074 0%, #0b2545 100%);
             color: white;
-            padding: 25px;
+            padding: 22px;
             border-radius: 8px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             text-align: center;
         }
         
         .metric-card h3 {
-            font-size: 0.9em;
+            font-size: 0.85em;
             opacity: 0.9;
             margin-bottom: 10px;
             text-transform: uppercase;
@@ -74,16 +74,20 @@
         }
         
         .metric-card .value {
-            font-size: 2.5em;
+            font-size: 2.2em;
             font-weight: bold;
         }
         
         .metric-card.accent {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            background: linear-gradient(135deg, #0070d2 0%, #134074 100%);
         }
         
         .metric-card.success {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+        }
+        
+        .metric-card.warning {
+            background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
         }
         
         section {
@@ -94,7 +98,7 @@
             color: #333;
             margin-bottom: 20px;
             padding-bottom: 10px;
-            border-bottom: 2px solid #667eea;
+            border-bottom: 2px solid #134074;
         }
         
         table {
@@ -168,25 +172,45 @@
 <body>
     <div class="container">
         <header>
-            <h1>NetSage AI Dashboard</h1>
-            <p>Network Troubleshooting with Responsible AI</p>
+            <h1>NetSega AI Dashboard</h1>
+            <p>Cisco NetAcad VIP 2026 Submission • Network Troubleshooting with Responsible AI</p>
         </header>
         
         <div class="content">
             <section>
-                <h2>📊 Key Metrics</h2>
+                <h2>📊 Key Performance Metrics</h2>
                 <div class="metrics-grid">
                     <div class="metric-card">
                         <h3>Total Cases</h3>
                         <div class="value">31</div>
                     </div>
+                    <div class="metric-card success">
+                        <h3>Successful AI Diagnoses</h3>
+                        <div class="value">31</div>
+                    </div>
+                    <div class="metric-card">
+                        <h3>Failed AI Diagnoses</h3>
+                        <div class="value">0</div>
+                    </div>
                     <div class="metric-card accent">
                         <h3>Rule Match Rate</h3>
                         <div class="value">90.3%</div>
                     </div>
-                    <div class="metric-card success">
+                    <div class="metric-card">
                         <h3>Human Reviews</h3>
                         <div class="value">31</div>
+                    </div>
+                    <div class="metric-card success">
+                        <h3>Accepted Reviews</h3>
+                        <div class="value">22</div>
+                    </div>
+                    <div class="metric-card warning">
+                        <h3>Edited Reviews</h3>
+                        <div class="value">9</div>
+                    </div>
+                    <div class="metric-card warning">
+                        <h3>Human Correction Rate</h3>
+                        <div class="value">29.0%</div>
                     </div>
                 </div>
             </section>
@@ -300,7 +324,7 @@
         </div>
         
         <footer>
-            <p>NetSage AI Dashboard • Generated: 2026-08-19 15:37:56</p>
+            <p>NetSega AI Dashboard • Generated: 2026-08-20 17:33:01</p>
             <p>Rule Checker: datasets/rule_checker_results.csv | Human Review: datasets/responsible_ai_log.csv</p>
         </footer>
     </div>
